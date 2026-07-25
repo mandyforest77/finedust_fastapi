@@ -1,0 +1,6 @@
+venv-fastapi/
+__pycache__/
+*.db
+.env
+
+
