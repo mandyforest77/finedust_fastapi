@@ -250,7 +250,7 @@ def get_gangnam_data():
     conn = sqlite3.connect(db_name0)
     query = """
         SELECT substr(dataTime, 1, 10) as date, AVG(dustValue) as dustValue
-        FROM predict_history
+        FROM finedust
         WHERE location = '강남구'
         GROUP BY date
         ORDER BY date ASC
