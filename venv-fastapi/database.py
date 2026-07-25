@@ -164,7 +164,7 @@ def get_files():
         
         import matplotlib.pyplot as plt
         import io, base64
-        plt.rcParams['font.family'] = 'Malgun Gothic'
+        # plt.rcParams['font.family'] = 'Malgun Gothic'
 
         summary_table.T.plot(kind='line', marker='o', figsize=(10, 4), grid=True)
         buf = io.BytesIO()

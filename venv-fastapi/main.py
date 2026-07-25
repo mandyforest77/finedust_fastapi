@@ -113,8 +113,8 @@ def cal_arima():
         <html>
             <body style="text-align: center; padding: 50px; font-family: sans-serif;">
                 <h2 style="color: #d35400;">⏳ 실시간 미세먼지 데이터 수집 중...</h2>
-                <p style="color: #666;">Render 서버가 처음 켜져서 미세먼지 원본 CSV 데이터를 DB에 채워 넣는 중이삼!</p>
-                <p style="color: #999;"><b>1~2분 뒤에 이 페이지를 새로고침(F5)</b> 하시면 멋진 AI 예측 그래프가 나타납니다!</p>
+                <p style="color: #666;">Render 서버가 처음 켜져서 미세먼지 원본 CSV 데이터를 DB에 채워 넣는 중입니다.</p>
+                <p style="color: #999;"><b>1~2분 뒤에 이 페이지를 새로고침(F5)</b> 하시면 AI 예측 그래프가 나타납니다!</p>
             </body>
         </html>
         """    
