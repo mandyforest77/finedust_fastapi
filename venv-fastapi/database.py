@@ -152,7 +152,7 @@ def get_files():
         )
     ''')
     
-    cursor.execute("SELECT COUNT(*) FROM finedust")
+    cursor.execute("SELECT COUNT(*) FROM predict_history")
     if cursor.fetchone()[0] > 0:
         print("이미 db가 있습니다. API불필요")
         final_df = pd.read_sql_query("SELECT location, dataTime, dustValue FROM predict_history", conn)
