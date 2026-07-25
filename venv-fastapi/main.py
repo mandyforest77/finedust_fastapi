@@ -60,11 +60,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 @app.get("/", response_class=HTMLResponse)
-async def get_data(background_tasks: BackgroundTasks, selected_time: str = None):
+async def get_data(selected_time: str = None,background_tasks: BackgroundTasks):
     global scheduler_started
     
-    if not sheduler_started:
-        background_task.add_task(my_api_scheduler)
+    if not scheduler_started and background_tasks:
+        background_tasks.add_task(my_api_scheduler)
         scheduler_started=True
     
     conn = get_db_connection()
