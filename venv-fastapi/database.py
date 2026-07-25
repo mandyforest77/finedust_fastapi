@@ -145,7 +145,7 @@ def get_files():
     cursor=conn.cursor()
 
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS finedust (
+        CREATE TABLE IF NOT EXISTS predict_history (
             location TEXT, 
             dataTime TEXT, 
             dustValue INTEGER
