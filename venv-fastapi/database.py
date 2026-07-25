@@ -144,6 +144,7 @@ def get_files():
     conn=sqlite3.connect(db_name0)
     cursor=conn.cursor()
 
+    # 🛠️ [수정 1] 방 이름을 'finedust'에서 'predict_history'로 통일했습니다.
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS predict_history (
             location TEXT, 
@@ -166,7 +167,13 @@ def get_files():
         import io, base64
         # plt.rcParams['font.family'] = 'Malgun Gothic'
 
-        summary_table.T.plot(kind='line', marker='o', figsize=(10, 4), grid=True)
+        # 🛠️ [수정 2] DB가 한글이므로 그래프 그릴 때만 임시로 영문으로 바꾸는 3줄 추가
+        eng_gus = {'중구': 'Jung-gu', '강북구': 'Gangbuk-gu', '강남구': 'Gangnam-gu', '서초구': 'Seocho-gu'}
+        plot_table = summary_table.copy()
+        plot_table.index = plot_table.index.map(eng_gus)
+
+        # 🛠️ [수정 3] summary_table 대신 plot_table로 그래프를 그립니다.
+        plot_table.T.plot(kind='line', marker='o', figsize=(10, 4), grid=True)
         buf = io.BytesIO()
         plt.savefig(buf, format='png', bbox_inches='tight')
         img_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
@@ -191,7 +198,7 @@ def get_files():
         # 기본 믹스드 파싱 시도
         parsed_date = pd.to_datetime(str_date, format='mixed', errors='coerce')
         
-        # 만약 판다스 파싱이 실패해서 전부 NaT(빈값)가 되었다면 수동으로 글자를 쪼갭니다.
+        # 만약 판다스 파싱이 실패해서 전부 NaT(빈값)가 되었다면 수동으로 글자를 쪼깁니다.
         if parsed_date.isnull().all():
             # 앞 4자리(년)-중간2자리(월)-그다음2자리(일) 조합
             safe_date_str = str_date.str[:4] + '-' + str_date.str[4:6] + '-' + str_date.str[6:8]
@@ -216,18 +223,22 @@ def get_files():
         # 'dataTime' 문자열에서 앞 10자리(YYYY-MM-DD) 추출
         final_df['date'] = final_df['dataTime'].str[:10]
         
-        # [핵심 수정] 측정소명(location)이 '~구'로 끝나는 정상 자치구 데이터만 남깁니다.
-        # (강남대로, 강변북로, 홍릉로 같은 도로변 측정소 자동 제거)
-        eng_gus = {'중구': 'Jung-gu', '강북구': 'Gangbuk-gu', '강남구': 'Gangnam-gu', '서초구': 'Seocho-gu'}
-        final_df['location'] = final_df['location'].map(eng_gus)
+        # 🛠️ [수정 4] DB 전체를 영어로 바꾸던 기존 코드를 지우고, 한글 상태로 4개 구만 필터링합니다.
+        target_gus = ['중구', '강북구', '강남구', '서초구']
+        final_df = final_df[final_df['location'].isin(target_gus)]
         summary_table = final_df.groupby(['location', 'date'])['dustValue'].mean().round(1).unstack(fill_value=0)
         
         import matplotlib.pyplot as plt
         import io, base64
         # plt.rcParams['font.family'] = 'Malgun Gothic' # 한글 깨짐 방지
 
-        # 1. 엑셀 차트 그리듯 plt.plot으로 선 그래프 그리기
-        summary_table.T.plot(kind='line', marker='o', figsize=(10, 4), grid=True)
+        # 🛠️ [수정 5] 처음 저장할 때도 그래프 그릴 때만 영문 변환용 복사본을 만들어 처리합니다.
+        eng_gus = {'중구': 'Jung-gu', '강북구': 'Gangbuk-gu', '강남구': 'Gangnam-gu', '서초구': 'Seocho-gu'}
+        plot_table = summary_table.copy()
+        plot_table.index = plot_table.index.map(eng_gus)
+
+        # 🛠️ [수정 6] plot_table로 그래프를 그립니다. (한글 깨짐 차단)
+        plot_table.T.plot(kind='line', marker='o', figsize=(10, 4), grid=True)
         
         # 2. 그린 그래프를 글자 코드(img_base64)로 임시 변환하기
         buf = io.BytesIO()
@@ -244,7 +255,6 @@ def get_files():
     
     conn.close()
     return None
-
 def get_gangnam_data():
     conn = sqlite3.connect(db_name0)
     cursor = conn.cursor()
