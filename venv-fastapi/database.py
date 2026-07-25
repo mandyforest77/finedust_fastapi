@@ -255,6 +255,7 @@ def get_files():
     
     conn.close()
     return None
+    
 def get_gangnam_data():
     conn = sqlite3.connect(db_name0)
     cursor = conn.cursor()
@@ -272,10 +273,11 @@ def get_gangnam_data():
     conn.commit()  # 도장 쾅 찍기
 
     try:
+        # 🛠️ [수정] DB에 한글 구 이름이 들어있으므로 '강남구'로 직접 조회합니다!
         query = """
             SELECT substr(dataTime, 1, 10) as date, AVG(dustValue) as dustValue
             FROM predict_history
-            WHERE location = 'Gangnam-gu'
+            WHERE location = '강남구'
             GROUP BY date
             ORDER BY date ASC
         """
