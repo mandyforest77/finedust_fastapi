@@ -246,20 +246,25 @@ def get_files():
     return None
 
 def get_gangnam_data():
-    # DB에서 강남구의 날짜별 미세먼지 평균 데이터를 가져옵니다.
     conn = sqlite3.connect(db_name0)
-    query = """
-        SELECT substr(dataTime, 1, 10) as date, AVG(dustValue) as dustValue
-        FROM finedust
-        WHERE location = '강남구'
-        GROUP BY date
-        ORDER BY date ASC
-    """
-    gangnam_df = pd.read_sql(query, conn)
-    conn.close()
+    
+    # 🚀 [수정] 테이블이 아직 생성 안 되었을 때의 폭발 방지 및 영문 구 이름 조회 일치!
+    try:
+        query = """
+            SELECT substr(dataTime, 1, 10) as date, AVG(dustValue) as dustValue
+            FROM predict_history
+            WHERE location = 'Gangnam-gu'
+            GROUP BY date
+            ORDER BY date ASC
+        """
+        gangnam_df = pd.read_sql(query, conn)
+        conn.close()
 
-    if gangnam_df.empty:
+        if gangnam_df.empty:
+            return [], []
+
+        return gangnam_df['dustValue'].tolist(), gangnam_df['date'].tolist()
+    except Exception as e:
+        print(f"👉 테이블 대기 중: {e}")
+        conn.close()
         return [], []
-
-    # 날짜 리스트와 수치 리스트를 나누어 반환합니다.
-    return gangnam_df['dustValue'].tolist(), gangnam_df['date'].tolist()
