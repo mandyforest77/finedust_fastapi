@@ -25,6 +25,16 @@ db_name = "dustlist.db"
 def get_db_connection():
     return sqlite3.connect(db_name)
 
+async def my_api_scheduler():
+    while True:
+        try:
+            print("🌐 [스케줄러] 1시간 주기가 되어 실시간 API를 딱 1번 호출합니다...")
+            database.update_db()  # 실시간 최신 미세먼지 수집 가동!
+        except Exception as e:
+            print(f"🚨 스케줄러 API 수집 대기 중 (Quota 초과 등): {e}")
+
+        await asyncio.sleep(3600)  # 다음 수집 때까지 정확히 1시간(3600초) 휴식!
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("⏳ 서버 시작 중... 최신 미세먼지 데이터를 가져옵니다.")   
@@ -50,7 +60,13 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 @app.get("/", response_class=HTMLResponse)
-async def get_data(selected_time: str = None):
+async def get_data(background_tasks: BackgroundTasks, selected_time: str = None):
+    global scheduler_started
+    
+    if not sheduler_started:
+        background_task.add_task(my_api_scheduler)
+        scheduler_started=True
+    
     conn = get_db_connection()
     cursor = conn.cursor()
     
