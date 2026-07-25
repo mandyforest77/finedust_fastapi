@@ -108,6 +108,17 @@ def get_chart():
 def cal_arima():
     data,dates= database.get_gangnam_data()
     
+    if not data or len(data) < 7:
+        return """
+        <html>
+            <body style="text-align: center; padding: 50px; font-family: sans-serif;">
+                <h2 style="color: #d35400;">⏳ 실시간 미세먼지 데이터 수집 중...</h2>
+                <p style="color: #666;">Render 서버가 처음 켜져서 미세먼지 원본 CSV 데이터를 DB에 채워 넣는 중이삼!</p>
+                <p style="color: #999;"><b>1~2분 뒤에 이 페이지를 새로고침(F5)</b> 하시면 멋진 AI 예측 그래프가 나타납니다!</p>
+            </body>
+        </html>
+        """    
+    
     acf_values = acf(data, nlags=5)
     pacf_values = pacf(data, nlags=5)
     I_values = pd.Series(data).diff().dropna().round(2).tolist()
