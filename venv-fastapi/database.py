@@ -10,6 +10,7 @@ import os
 import glob
 import pandas as pd
 
+
 def get_db_connection():
     return sqlite3.connect(db_name)
 
@@ -162,7 +163,9 @@ def get_files():
         target_gus = ['중구', '강북구', '강남구', '서초구']
         final_df = final_df[final_df['location'].isin(target_gus)]
         summary_table = final_df.groupby(['location', 'date'])['dustValue'].mean().round(1).unstack(fill_value=0)
-        
+
+        import matplotlib
+        matplotlib.use('Agg') 
         import matplotlib.pyplot as plt
         import io, base64
         # plt.rcParams['font.family'] = 'Malgun Gothic'
@@ -177,6 +180,8 @@ def get_files():
         buf = io.BytesIO()
         plt.savefig(buf, format='png', bbox_inches='tight')
         img_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+        
+        plt.clf()   
         plt.close()
         
         return summary_table.to_html(), img_base64
@@ -227,7 +232,9 @@ def get_files():
         target_gus = ['중구', '강북구', '강남구', '서초구']
         final_df = final_df[final_df['location'].isin(target_gus)]
         summary_table = final_df.groupby(['location', 'date'])['dustValue'].mean().round(1).unstack(fill_value=0)
-        
+
+        import matplotlib
+        matplotlib.use('Agg')
         import matplotlib.pyplot as plt
         import io, base64
         # plt.rcParams['font.family'] = 'Malgun Gothic' # 한글 깨짐 방지
@@ -244,6 +251,7 @@ def get_files():
         buf = io.BytesIO()
         plt.savefig(buf, format='png', bbox_inches='tight')
         img_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+        plt.clf()
         plt.close() # 메모리 청소
 
         # 3. 데이터베이스 저장 후 두 개를 메인 화면으로 전달
