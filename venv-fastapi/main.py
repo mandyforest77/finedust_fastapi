@@ -33,7 +33,7 @@ async def my_api_scheduler():
         except Exception as e:
             print(f"🚨 스케줄러 API 수집 대기 중 (Quota 초과 등): {e}")
 
-        await asyncio.sleep(3600)  # 다음 수집 때까지 정확히 1시간(3600초) 휴식!
+        await asyncio.sleep(3600*5)  # 다음 수집 때까지 정확히 1시간(3600초) 휴식!
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
