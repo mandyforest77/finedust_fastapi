@@ -218,13 +218,13 @@ def get_files():
         
         # [핵심 수정] 측정소명(location)이 '~구'로 끝나는 정상 자치구 데이터만 남깁니다.
         # (강남대로, 강변북로, 홍릉로 같은 도로변 측정소 자동 제거)
-        target_gus = ['중구', '강북구', '강남구', '서초구']
-        final_df = final_df[final_df['location'].isin(target_gus)]
+        eng_gus = {'중구': 'Jung-gu', '강북구': 'Gangbuk-gu', '강남구': 'Gangnam-gu', '서초구': 'Seocho-gu'}
+        final_df['location'] = final_df['location'].map(eng_gus)
         summary_table = final_df.groupby(['location', 'date'])['dustValue'].mean().round(1).unstack(fill_value=0)
         
         import matplotlib.pyplot as plt
         import io, base64
-        plt.rcParams['font.family'] = 'Malgun Gothic' # 한글 깨짐 방지
+        # plt.rcParams['font.family'] = 'Malgun Gothic' # 한글 깨짐 방지
 
         # 1. 엑셀 차트 그리듯 plt.plot으로 선 그래프 그리기
         summary_table.T.plot(kind='line', marker='o', figsize=(10, 4), grid=True)

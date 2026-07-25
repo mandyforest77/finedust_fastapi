@@ -7,19 +7,19 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 import pandas as pd
 
 def get_plots(acf_v, pacf_v,I_v):
-    plt.rcParams["font.family"] = "Malgun Gothic"
+    # plt.rcParams["font.family"] = "Malgun Gothic"
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(14, 3.5))
 
     # 왼쪽 ACF / 오른쪽 PACF 그래프 생성
     ax1.stem(range(len(pacf_v)), pacf_v)
-    ax1.set_title("PACF 그래프")
+    ax1.set_title("PACF graph")
     
     ax2.plot(I_v, marker="o", color="orange")
     ax2.axhline(y=0, color="red", linestyle="--")  # 기준선 0
-    ax2.set_title("1차 차분 (d 결정용)")
+    ax2.set_title("first I graph")
 
     ax3.stem(range(len(acf_v)), acf_v)
-    ax3.set_title("ACF 그래프")
+    ax3.set_title("ACF graph")
     
     # 이미지 글자 코드(Base64) 변환
     buf = io.BytesIO()
@@ -28,7 +28,7 @@ def get_plots(acf_v, pacf_v,I_v):
     return base64.b64encode(buf.getvalue()).decode("utf-8")
 
 def get_htmlplot(dates,data):
-    plt.rcParams["font.family"] = "Malgun Gothic"
+    # plt.rcParams["font.family"] = "Malgun Gothic"
     fig, ax = plt.subplots(figsize=(12, 14))
     # 🚀 [수정 완] 뒤에 .dt 를 빼고 바로 .strftime()을 쓰시면 됩니다!
     short_dates = pd.to_datetime(dates).strftime("%m/%d").str.lstrip("0").tolist()
@@ -36,7 +36,7 @@ def get_htmlplot(dates,data):
 
     
     ax.plot(short_dates, data, marker="o", color="royalblue", linewidth=2)
-    ax.set_title("강남구 미세먼지 ARIMA예상", fontsize=14, pad=15)
+    ax.set_title("Gangnamgu findust ARIMA prediction", fontsize=14, pad=15)
     ax.tick_params(axis="x", rotation=45)  # 날짜 글자 45도 돌리기
     ax.grid(True, linestyle="--", alpha=0.5)  # 배경에 연한 모눈종이 선 추가
 
