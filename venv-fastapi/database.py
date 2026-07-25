@@ -247,8 +247,20 @@ def get_files():
 
 def get_gangnam_data():
     conn = sqlite3.connect(db_name0)
-    
-    # 🚀 [수정] 테이블이 아직 생성 안 되었을 때의 폭발 방지 및 영문 구 이름 조회 일치!
+    cursor = conn.cursor()
+
+    # 🚀 [핵심 추가] 조회하기 전에 테이블이 없으면 강제로 빈 테이블이라도 만들어서 오류를 방지하삼!
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS predict_history (
+            location TEXT, 
+            dataTime TEXT, 
+            dustValue INTEGER
+        )
+    """
+    )
+    conn.commit()  # 도장 쾅 찍기
+
     try:
         query = """
             SELECT substr(dataTime, 1, 10) as date, AVG(dustValue) as dustValue
@@ -263,7 +275,7 @@ def get_gangnam_data():
         if gangnam_df.empty:
             return [], []
 
-        return gangnam_df['dustValue'].tolist(), gangnam_df['date'].tolist()
+        return gangnam_df["dustValue"].tolist(), gangnam_df["date"].tolist()
     except Exception as e:
         print(f"👉 테이블 대기 중: {e}")
         conn.close()
