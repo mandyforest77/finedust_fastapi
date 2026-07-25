@@ -60,7 +60,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 @app.get("/", response_class=HTMLResponse)
-async def get_data(selected_time: str = None,background_tasks: BackgroundTasks):
+async def get_data(selected_time: str = None,background_tasks: BackgroundTasks=None):
     global scheduler_started
     
     if not scheduler_started and background_tasks:
