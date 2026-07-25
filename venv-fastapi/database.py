@@ -157,13 +157,19 @@ def get_files():
     cursor.execute("SELECT COUNT(*) FROM predict_history")
     if cursor.fetchone()[0] > 0:
         print("이미 db가 있습니다. API불필요")
-        final_df = pd.read_sql_query("SELECT location, dataTime, dustValue FROM predict_history", conn)
+        query = """
+            SELECT location, 
+                   substr(dataTime, 1, 10) as date, 
+                   ROUND(AVG(dustValue), 1) as dustValue
+            FROM predict_history
+            WHERE location IN ('중구', '강북구', '강남구', '서초구')
+            GROUP BY location, date
+        """
+        summary_df = pd.read_sql_query(query, conn)
         conn.close()
-        final_df['date'] = final_df['dataTime'].str[:10]
-        target_gus = ['중구', '강북구', '강남구', '서초구']
-        final_df = final_df[final_df['location'].isin(target_gus)]
-        summary_table = final_df.groupby(['location', 'date'])['dustValue'].mean().round(1).unstack(fill_value=0)
-
+        
+        summary_table = summary_df.set_index(['location', 'date'])['dustValue'].unstack(fill_value=0)
+    
         import matplotlib
         matplotlib.use('Agg') 
         import matplotlib.pyplot as plt
